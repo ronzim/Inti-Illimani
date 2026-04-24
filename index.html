@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,22 +9,34 @@
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    
+
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Deck.gl (Include tutti i core e geo-layers) -->
     <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
-    
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #0f172a; color: white; font-family: system-ui, -apple-system, sans-serif; }
-        #app { width: 100vw; height: 100vh; }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0f172a;
+            color: white;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        #app {
+            width: 100vw;
+            height: 100vh;
+        }
+
         .deck-tooltip {
             font-family: system-ui, -apple-system, sans-serif;
             padding: 12px !important;
@@ -37,6 +50,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="app"></div>
 
@@ -53,12 +67,12 @@
             let currentKm = 0;
 
             for (let i = 0; i < numPoints; i++) {
-                currentLat += (Math.random() - 0.2) * 0.0005; 
+                currentLat += (Math.random() - 0.2) * 0.0005;
                 currentLng += (Math.random() - 0.2) * 0.0005;
                 currentKm += 1;
 
-                let pof = Math.random() * 0.2; 
-                let depth = Math.random() * 2; 
+                let pof = Math.random() * 0.2;
+                let depth = Math.random() * 2;
                 let severity = "Basso";
                 let type = "Normale usura";
 
@@ -68,9 +82,9 @@
                     severity = "Alto";
                     type = "Corrosione estesa";
                 }
-                
+
                 if (i % 80 === 0) {
-                    pof = 0.9 + Math.random() * 0.1; 
+                    pof = 0.9 + Math.random() * 0.1;
                     depth = 7 + Math.random() * 2;
                     severity = "Critico";
                     type = "Pitting severo (F-001)";
@@ -78,7 +92,7 @@
 
                 data.push({
                     id: `KP-${currentKm}`,
-                    position: [currentLng, currentLat], 
+                    position: [currentLng, currentLat],
                     kp: currentKm,
                     pof: parseFloat(pof.toFixed(3)),
                     depth: parseFloat(depth.toFixed(2)),
@@ -93,7 +107,7 @@
         const MOCK_DATA = generatePipelineData(500);
 
         // --- Componenti UI ---
-        
+
         const MetricCard = ({ title, value, unit, icon, colorClass }) => (
             <div className="bg-slate-800/80 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-lg">
                 <div className="flex items-center justify-between mb-2">
@@ -110,7 +124,7 @@
         const Legend = () => (
             <div className="absolute bottom-8 right-8 bg-slate-800/90 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-xl w-64 z-10 pointer-events-none">
                 <h3 className="text-sm font-bold text-slate-200 mb-3 uppercase tracking-wider">Livello di Rischio (POF)</h3>
-                
+
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -119,7 +133,7 @@
                         </div>
                         <span className="text-xs text-slate-400">&gt; 0.8</span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-4 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]"></div>
@@ -127,7 +141,7 @@
                         </div>
                         <span className="text-xs text-slate-400">0.5 - 0.8</span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-4 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.6)]"></div>
@@ -135,7 +149,7 @@
                         </div>
                         <span className="text-xs text-slate-400">0.2 - 0.5</span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-4 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]"></div>
@@ -144,7 +158,7 @@
                         <span className="text-xs text-slate-400">&lt; 0.2</span>
                     </div>
                 </div>
-                
+
                 <div className="mt-4 pt-3 border-t border-slate-700">
                     <p className="text-xs text-slate-400 italic">L'altezza delle colonne indica la profondità dell'anomalia (mm).</p>
                 </div>
@@ -152,11 +166,11 @@
         );
 
         // --- App Principale ---
-        
+
         function App() {
             const containerRef = React.useRef(null);
             const deckRef = React.useRef(null);
-            
+
             const [viewState, setViewState] = React.useState({
                 longitude: START_LNG - 0.05,
                 latitude: START_LAT,
@@ -170,7 +184,7 @@
                 const criticalCount = MOCK_DATA.filter(d => d.pof >= 0.8).length;
                 const avgDepth = (MOCK_DATA.reduce((acc, curr) => acc + curr.depth, 0) / MOCK_DATA.length).toFixed(1);
                 const maxPof = Math.max(...MOCK_DATA.map(d => d.pof)).toFixed(3);
-                
+
                 return { criticalCount, avgDepth, maxPof };
             }, []);
 
@@ -180,10 +194,10 @@
             }, []);
 
             const getColorFromPOF = (pof) => {
-                if (pof >= 0.8) return [239, 68, 68, 255]; 
-                if (pof >= 0.5) return [249, 115, 22, 255]; 
-                if (pof >= 0.2) return [250, 204, 21, 255]; 
-                return [52, 211, 153, 200]; 
+                if (pof >= 0.8) return [239, 68, 68, 255];
+                if (pof >= 0.5) return [249, 115, 22, 255];
+                if (pof >= 0.2) return [250, 204, 21, 255];
+                return [52, 211, 153, 200];
             };
 
             // Inizializza Deck.gl tramite Vanilla API (Senza Maplibre)
@@ -194,7 +208,7 @@
                     container: containerRef.current,
                     initialViewState: viewState,
                     controller: true,
-                    getTooltip: ({object}) => object && {
+                    getTooltip: ({ object }) => object && {
                         html: `
                             <div class="font-bold text-lg mb-1 border-b border-slate-600 pb-1">Metro (KP): ${object.kp}</div>
                             <div class="grid grid-cols-2 gap-x-4 gap-y-1 mt-2 text-sm">
@@ -212,7 +226,7 @@
                             </div>
                         `
                     },
-                    onViewStateChange: ({viewState: newViewState}) => setViewState(newViewState)
+                    onViewStateChange: ({ viewState: newViewState }) => setViewState(newViewState)
                 });
 
                 deckRef.current = deckgl;
@@ -232,12 +246,12 @@
                             // Layer mappa di sfondo nativo Deck.gl (aggira gli errori di sicurezza CORS iframe)
                             new deck.TileLayer({
                                 id: 'base-map',
-                                data: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+                                data: 'https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoicm9uemltIiwiYSI6ImNqdDdtOWIzZDBmODA0OWp6bThxbGZhYXgifQ.t4KKKWA-zOe6OLzFhuT0bw',
                                 minZoom: 0,
                                 maxZoom: 19,
                                 renderSubLayers: props => {
                                     const {
-                                        bbox: {west, south, east, north}
+                                        bbox: { west, south, east, north }
                                     } = props.tile;
 
                                     return new deck.BitmapLayer(props, {
@@ -261,14 +275,14 @@
                                 id: 'anomalies-3d',
                                 data: MOCK_DATA,
                                 diskResolution: 12,
-                                radius: 20, 
+                                radius: 20,
                                 extruded: true,
                                 pickable: true,
-                                elevationScale: 100, 
+                                elevationScale: 100,
                                 getPosition: d => d.position,
                                 getFillColor: d => getColorFromPOF(d.pof),
                                 getLineColor: [0, 0, 0, 0],
-                                getElevation: d => d.depth, 
+                                getElevation: d => d.depth,
                             })
                         ]
                     });
@@ -291,18 +305,18 @@
                                 Minera Escondida - Tratto ME-BHP-2026-001
                             </p>
                         </div>
-                        
+
                         {/* Controlli vista (pointer-events-auto per permettere i click) */}
                         <div className="pointer-events-auto bg-slate-800/80 backdrop-blur-md rounded-lg p-1 border border-slate-700 flex flex-col gap-1 shadow-lg">
-                            <button 
-                                onClick={() => setViewState({...viewState, pitch: 0, bearing: 0})}
+                            <button
+                                onClick={() => setViewState({ ...viewState, pitch: 0, bearing: 0 })}
                                 className="p-2 hover:bg-slate-700 rounded text-slate-300 transition-colors"
                                 title="Vista 2D (Dall'alto)"
                             >
                                 <i data-lucide="map" className="w-5 h-5"></i>
                             </button>
-                            <button 
-                                onClick={() => setViewState({...viewState, pitch: 45, bearing: -20})}
+                            <button
+                                onClick={() => setViewState({ ...viewState, pitch: 45, bearing: -20 })}
                                 className="p-2 hover:bg-slate-700 rounded text-slate-300 transition-colors"
                                 title="Vista 3D"
                             >
@@ -313,26 +327,26 @@
 
                     {/* UI Sovrapposta: Dashboard laterale */}
                     <div className="absolute top-28 left-6 w-72 flex flex-col gap-4 pointer-events-auto z-10">
-                        <MetricCard 
-                            title="Punti Critici Rilevati" 
-                            value={stats.criticalCount} 
+                        <MetricCard
+                            title="Punti Critici Rilevati"
+                            value={stats.criticalCount}
                             icon="alert-triangle"
                             colorClass="text-red-500"
                         />
-                        <MetricCard 
-                            title="POF Massimo" 
-                            value={stats.maxPof} 
+                        <MetricCard
+                            title="POF Massimo"
+                            value={stats.maxPof}
                             icon="activity"
                             colorClass="text-orange-500"
                         />
-                        <MetricCard 
-                            title="Profondità Media Danno" 
-                            value={stats.avgDepth} 
+                        <MetricCard
+                            title="Profondità Media Danno"
+                            value={stats.avgDepth}
                             unit="mm"
                             icon="arrow-down-to-line"
                             colorClass="text-blue-400"
                         />
-                        
+
                         <div className="bg-slate-800/80 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-lg mt-2">
                             <h3 className="text-sm font-bold text-slate-200 mb-2 flex items-center gap-2">
                                 <i data-lucide="info" className="w-4 h-4 text-slate-400"></i>
@@ -348,10 +362,10 @@
 
                     {/* UI Sovrapposta: Legenda */}
                     <Legend />
-                    
+
                     {/* Istruzioni interazione */}
                     <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900/60 backdrop-blur px-4 py-2 rounded-full text-xs text-slate-300 font-medium border border-slate-700 pointer-events-none tracking-wide text-center z-10 shadow-lg">
-                        Trascina per spostarti • Ctrl + Trascina per ruotare (3D)<br/> Passa sopra le colonne per i dettagli
+                        Trascina per spostarti • Ctrl + Trascina per ruotare (3D)<br /> Passa sopra le colonne per i dettagli
                     </div>
                 </div>
             );
@@ -361,4 +375,5 @@
         root.render(<App />);
     </script>
 </body>
+
 </html>
