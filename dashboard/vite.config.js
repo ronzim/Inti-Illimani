@@ -7,6 +7,10 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   base: '/Inti-Illimani/',
+  build: {
+    outDir: '../docs',
+    emptyOutDir: true
+  },
   plugins: [
     vue(),
     tailwindcss(),

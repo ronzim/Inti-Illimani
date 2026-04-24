@@ -131,7 +131,8 @@ const stats = computed(() => {
 
 onMounted(async () => {
   try {
-    const res = await fetch('/pipeline_data.json');
+    const dataUrl = `${import.meta.env.BASE_URL}pipeline_data.json`;
+    const res = await fetch(dataUrl);
     if (!res.ok) throw new Error("Could not fetch data");
     const rawData = await res.json();
     pipelineData.value = rawData;
