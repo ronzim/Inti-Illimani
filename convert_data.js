@@ -3,6 +3,10 @@ const path = require('path');
 const xlsx = require('xlsx');
 
 function loadAndParse(filename) {
+    if (!fs.existsSync(filename)) {
+        console.log("File not found:", filename);
+        return [];
+    }
     const wb = xlsx.readFile(filename);
     const sheet = wb.Sheets[wb.SheetNames[0]];
     const rawData = xlsx.utils.sheet_to_json(sheet);
@@ -56,19 +60,36 @@ function loadAndParse(filename) {
 function run() {
     const file1 = path.join(__dirname, 'data/BHP_POF_DataExport_ME-BHP-2026-001.xlsx');
     const file2 = path.join(__dirname, 'data/Adjusted records (12.7 mm base).xlsx');
+    const file3 = path.join(__dirname, 'data/Adjusted records (12.7 mm base) _1 .xlsx');
 
-    console.log("Parsing", file1);
+    console.log("Parsing Zone 1 - File 1:", file1);
     const data1 = loadAndParse(file1);
 
-    console.log("Parsing", file2);
+    console.log("Parsing Zone 1 - File 2:", file2);
     const data2 = loadAndParse(file2);
 
-    const combined = [...data1, ...data2];
+    const zone1Data = [...data1, ...data2];
 
-    const outPath = path.join(__dirname, 'data/pipeline_data.json');
-    fs.writeFileSync(outPath, JSON.stringify(combined, null, 2));
+    console.log("Parsing Zone 2 - File 3:", file3);
+    const zone2Data = loadAndParse(file3);
 
-    console.log(`Saved ${combined.length} records to ${outPath}`);
+    const output = [
+        {
+            id: "zone1",
+            name: "Minera Escondida - Tratto ME-BHP-2026-001",
+            data: zone1Data
+        },
+        {
+            id: "zone2",
+            name: "Nuova Zona Geografica",
+            data: zone2Data
+        }
+    ];
+
+    const outPath = path.join(__dirname, 'dashboard/public/pipeline_data.json');
+    fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
+
+    console.log(`Saved 2 zones to ${outPath}`);
 }
 
 run();

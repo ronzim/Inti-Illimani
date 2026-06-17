@@ -142,7 +142,7 @@ function updateLayers(mapData) {
   if (!deckInstance) return;
 
   const validData = mapData.filter(d =>
-    Boolean(d.position && d.position.length >= 2 && d.position[0] < -50)
+    Boolean(d.position && d.position.length >= 2 && d.position[0] !== 0 && d.position[1] !== 0)
   );
   const lineData = [...validData]
     .sort((a, b) => a.kp - b.kp)
