@@ -134,7 +134,7 @@ Ecco il codice:
                 
             pr.create_review_comment(
                 body=f"🤖 **Gemini AI:** {body}",
-                commit_id=last_commit,
+                commit=last_commit,
                 path=path,
                 line=int(line),
                 side="RIGHT"
