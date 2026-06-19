@@ -9,6 +9,7 @@ jobs:
         permissions:
             contents: read
             pull-requests: write
+            issues: write # required to create PR issue comments
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
