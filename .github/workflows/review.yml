@@ -1,0 +1,8 @@
+name: Reviewer
+on:
+    pull_request:
+        types: [opened, synchronize]
+
+jobs:
+  call-central-workflow:
+    uses: dvisionlab/central-reviewer/.github/workflows/gemini-review.yml@master
